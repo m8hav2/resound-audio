@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <!-- FONT AWESOME CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+
+    <!-- FAVICON LINKS -->
+    <link rel="icon" type="image/x-icon" href="./media/favicon/white/favicon.ico">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="./media/favicon/white/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./media/favicon/white/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./media/favicon/white/favicon-16x16.png">
+    <link rel="manifest" href="./media/favicon/white/site.webmanifest">
+
+    <!-- GOOGLE FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Courgette&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+        rel="stylesheet">
+
+    <title>Re&ound | An Interactive Music Streaming Platform</title>
+</head>
+
+<body>
+
+    <nav class="full-height">
+        <div id="nav-logo-container">
+            <div id="logo-wrapper">
+                
+                <span class="nav-logo-text nav-shrinking-item">
+                    Re
+                </span>
+                <img id="nav-logo-image" src="./media/logos/logo_white.png" alt="logo">
+                <span class="nav-logo-text nav-shrinking-item">
+                    und
+                </span>
+
+                <!-- Re𝄞Ound -->
+            </div>
+        </div>
+        <div id="nav-content">
+            <div id="nav-home-button-container" class="nav-button-container">
+                <div class="nav-button-icon-wrapper">
+                    <i class="fa-solid fa-house"></i>
+                </div>
+                <p class="nav-button-container-label nav-shrinking-item">
+                    Home
+                </p>
+            </div>
+            <div id="nav-explore-button-container" class="nav-button-container">
+                <div class="nav-button-icon-wrapper">
+                    <i class="fa-solid fa-mountain-sun"></i>
+                </div>
+                <p class="nav-button-container-label nav-shrinking-item">
+                    Explore
+                </p>
+            </div>
+            <div id="nav-library-button-container" class="nav-button-container">
+                <div class="nav-button-icon-wrapper">
+                    <i class="fa-solid fa-lines-leaning"></i>
+                </div>
+                <p class="nav-button-container-label nav-shrinking-item">
+                    Library
+                </p>
+                <div class="nav-library-content-items-wrapper nav-shrinking-item">
+                    <p class="nav-library-content-item">History</p>
+                    <p class="nav-library-content-item">Liked Songs</p>
+                    <p class="nav-library-content-item">2020 Favourites</p>
+                    <p class="nav-library-content-item">2021 Favourites</p>
+                    <p class="nav-library-content-item">Favourite Pop Music</p>
+                    <p class="nav-library-content-item">2022 Recap</p>
+                    <p class="nav-library-content-item">2021 Summer Recap</p>
+                    <p class="nav-library-content-item">My SuperMix 4</p>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="right-window full-height">
+        <header>
+            <div id="header-left-empty-part"></div>
+            <div id="header-middle-part">
+                <div id="search-bar-wrapper">
+                    <input type="text" name="search" id="search-bar" placeholder="Search">
+                    <i class="fa-solid fa-magnifying-glass search-bar-icon"></i>
+                </div>
+                <div id="search-suggestions-wrapper" class="shrunk-element">
+                    <!-- <span class="search-suggestion">
+                        <p class="search-suggestion-text">
+                            Search History 1
+                        </p>
+                        <i class="fa-solid fa-magnifying-glass search-bar-icon"></i>
+                    </span>
+                    <span class="search-suggestion">
+                        <p class="search-suggestion-text">
+                            Search History 2
+                        </p>
+                        <i class="fa-solid fa-magnifying-glass search-bar-icon"></i>
+                    </span>
+                    <span class="search-suggestion">
+                        <p class="search-suggestion-text">
+                            Search History 3
+                        </p>
+                        <i class="fa-solid fa-magnifying-glass search-bar-icon"></i>
+                    </span>
+                    <span class="search-suggestion">
+                        <p class="search-suggestion-text">
+                            Search History 4
+                        </p>
+                        <i class="fa-solid fa-magnifying-glass search-bar-icon"></i>
+                    </span>
+                    <span class="search-suggestion">
+                        <p class="search-suggestion-text">
+                            Search History 5
+                        </p>
+                        <i class="fa-solid fa-magnifying-glass search-bar-icon"></i>
+                    </span> -->
+                </div>
+            </div>
+            <div id="header-right-part">
+                <button id="upload-button-container" class="header-right-part-button standard-button" title="Upload">
+                    <i class="fa-solid fa-upload"></i>
+                </button>
+                <button id="messages-button-container" class="header-right-part-button standard-button" title="Messages">
+                    <i class="fa-solid fa-envelope"></i>
+                </button>
+                <button id="profile-button-container" class="header-right-part-button standard-button" title="User Profile">
+                    <i class="fa-solid fa-user"></i>
+                </button>
+                <div class="profile-dropdown-overlay shrunk-element invisible-element">
+                    <ul>
+                        <li id="profile-dropdown-overlay-login-status">
+                            Not logged in
+                        </li>
+                        <li id="profile-dropdown-overlay-login-logout-button">
+                            Login / Sign Up
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+
+        <section id="content-window">
+            
+            <!--
+            <div id="recents-category" class="content-window-category">
+                <button class="content-window-category-scroll-button content-window-category-scroll-left-button">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <p class="content-window-category-label">Recently Played</p>
+                <div class="content-window-category-items-wrapper">
+                    <div class="content-window-category-item">
+                        <div class="content-window-category-item-cover-wrapper">
+                            <img src="./media/sample_audio_and_covers/covers/the_chainsmokers-closer-cover.jpg" alt="recents_item_cover" class="content-window-category-item-cover">
+                            <div class="content-window-category-item-cover-overlay">
+                                <div class="content-window-category-item-cover-overlay-icon-wrapper">
+                                    <i class="fa-solid fa-play"></i>
+                                </div>
+                            </div>    
+                        </div>
+                        <div class="content-window-category-item-labels">
+                            <p class="content-window-category-item-mainlabel">
+                                Closer
+                            </p>
+                            <p class="content-window-category-item-sublabel">
+                                The Chainsmokers
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <button class="content-window-category-scroll-button content-window-category-scroll-right-button">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            <div id="recommended-category" class="content-window-category">
+                <button class="content-window-category-scroll-button content-window-category-scroll-left-button">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <p class="content-window-category-label">Recommended For You</p>
+                <div class="content-window-category-items-wrapper">
+                    <div class="content-window-category-item">
+                        <div class="content-window-category-item-cover-wrapper">
+                            <img src="./media/sample_audio_and_covers/covers/imagine_dragons-birds-cover.jpeg" alt="recommended_item_cover" class="content-window-category-item-cover">
+                            <div class="content-window-category-item-cover-overlay">
+                                <div class="content-window-category-item-cover-overlay-icon-wrapper">
+                                    <i class="fa-solid fa-play"></i>
+                                </div>
+                            </div>    
+                        </div>
+                        <div class="content-window-category-item-labels">
+                            <p class="content-window-category-item-mainlabel">
+                                Birds
+                            </p>
+                            <p class="content-window-category-item-sublabel">
+                                Imagine Dragons
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <button class="content-window-category-scroll-button content-window-category-scroll-right-button">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            <div id="genres-category" class="content-window-category">
+                <button class="content-window-category-scroll-button content-window-category-scroll-left-button">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <p class="content-window-category-label">Popular Genres</p>
+                <div class="content-window-category-items-wrapper">
+                    <div class="content-window-category-item">
+                        <div class="content-window-category-item-cover-wrapper">
+
+                            <div class="content-window-category-item-cover">
+                                <img src="./media/sample_audio_and_covers/covers/pop-cover.jpg" alt="playlist_item_cover" class="content-window-category-item-cover-collage-image">
+                                <img src="./media/sample_audio_and_covers/covers/pop-cover.jpg" alt="playlist_item_cover" class="content-window-category-item-cover-collage-image">
+                                <img src="./media/sample_audio_and_covers/covers/pop-cover.jpg" alt="playlist_item_cover" class="content-window-category-item-cover-collage-image">
+                                <img src="./media/sample_audio_and_covers/covers/pop-cover.jpg" alt="playlist_item_cover" class="content-window-category-item-cover-collage-image">
+                            </div>
+                            
+                            <div class="content-window-category-item-cover-overlay">
+                                <div class="content-window-category-item-cover-overlay-icon-wrapper">
+                                    <i class="fa-solid fa-play"></i>
+                                </div>
+                            </div>    
+                        </div>
+                        <div class="content-window-category-item-labels">
+                            <p class="content-window-category-item-mainlabel">
+                                Pop
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <button class="content-window-category-scroll-button content-window-category-scroll-right-button">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            <div id="moods-category" class="content-window-category">
+                <button class="content-window-category-scroll-button content-window-category-scroll-left-button">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <p class="content-window-category-label">Moods</p>
+                <div class="content-window-category-items-wrapper">
+                    <div class="content-window-category-item">
+                        <div class="content-window-category-item-cover-wrapper">
+
+                            <div class="content-window-category-item-cover">
+                                <img src="./media/sample_audio_and_covers/covers/pop-cover.jpg" alt="playlist_item_cover" class="content-window-category-item-cover-collage-image">
+                                <img src="./media/sample_audio_and_covers/covers/pop-cover.jpg" alt="playlist_item_cover" class="content-window-category-item-cover-collage-image">
+                                <img src="./media/sample_audio_and_covers/covers/pop-cover.jpg" alt="playlist_item_cover" class="content-window-category-item-cover-collage-image">
+                                <img src="./media/sample_audio_and_covers/covers/pop-cover.jpg" alt="playlist_item_cover" class="content-window-category-item-cover-collage-image">
+                            </div>
+                            
+                            <div class="content-window-category-item-cover-overlay">
+                                <div class="content-window-category-item-cover-overlay-icon-wrapper">
+                                    <i class="fa-solid fa-play"></i>
+                                </div>
+                            </div>    
+                        </div>
+                        <div class="content-window-category-item-labels">
+                            <p class="content-window-category-item-mainlabel">
+                                Chill
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <button class="content-window-category-scroll-button content-window-category-scroll-right-button">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+            -->
+
+            <!--
+            <div id="playlist-description">
+
+                <div id="playlist-description-cover-wrapper">
+                    <div id="playlist-description-cover">
+                        <img src="./media/sample_audio_and_covers/covers/the_chainsmokers-closer-cover.jpg" alt="playlist_cover" class="playlist-description-cover-collage-image">
+                        <img src="./media/sample_audio_and_covers/covers/the_chainsmokers-closer-cover.jpg" alt="playlist_cover" class="playlist-description-cover-collage-image">
+                        <img src="./media/sample_audio_and_covers/covers/the_chainsmokers-closer-cover.jpg" alt="playlist_cover" class="playlist-description-cover-collage-image">
+                        <img src="./media/sample_audio_and_covers/covers/the_chainsmokers-closer-cover.jpg" alt="playlist_cover" class="playlist-description-cover-collage-image">
+                    </div>
+                </div>
+
+                <div id="playlist-description-info-and-buttons">
+                    <div id="playlist-description-info">
+                        <p id="playlist-info-title">Playlist Title</p>
+                        <p id="playlist-info-artists">Playlist Artists</p>
+                        <div id="playlist-info-count-and-duration">
+                            <p id="playlist-info-song-count">
+                                <span class="playlist-info-song-count-number">x</span>
+                                <span class="playlist-info-song-count-label">&nbsp;songs &nbsp;•&nbsp;&nbsp;</span>
+                            </p>
+                            <p id="playlist-info-duration">
+                                <span class="playlist-info-duration-number">y</span>
+                                <span class="playlist-info-duration-label">&nbsp;minutes</span>
+                            </p>
+                        </div>
+                    </div>
+    
+                    <div id="playlist-description-buttons">
+                        <button id="playlist-description-play-button" class="playlist-description-button">
+                            <i class="fa-solid fa-play playlist-description-button-icon"></i>
+                            <p class="playlist-description-button-label">Play</p>
+                        </button>
+                        <button id="playlist-description-shuffle-play-button" class="playlist-description-button">
+                            <i class="fa-solid fa-shuffle playlist-description-button-icon"></i>
+                            <p class="playlist-description-button-label">Shuffle Play</p>
+                        </button><br>
+                        <button id="playlist-description-add-to-library-button" class="playlist-description-button">
+                            <i class="fa-solid fa-plus playlist-description-button-icon"></i>
+                            <p class="playlist-description-button-label">Add to Library</p>
+                        </button>
+                        <button id="playlist-description-more-options-button" class="playlist-description-button">
+                            <i class="fa-solid fa-ellipsis-vertical playlist-description-button-icon"></i>
+                            <p class="playlist-description-button-label">More Options</p>
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+
+            <div id="playlist-content">
+
+                <div id="playlist-content-header">
+                    <div class="playlist-content-cover-column"></div>
+                    <p class="playlist-content-name-column">Name</p>
+                    <p class="playlist-content-artists-column">Artists</p>
+                    <p class="playlist-content-duration-column">Duration</p>
+                    <p class="playlist-content-options-column">Options</p>
+                </div>
+
+                <hr>
+
+                <div id="playlist-content-items">
+
+                    <div class="playlist-content-item">
+
+                        <div class="playlist-content-cover-column">
+                            <img class="playlist-content-item-cover-image" src="./media/sample_audio_and_covers/covers/the_chainsmokers-closer-cover.jpg" alt="playlist_item_cover">
+                            <div class="content-item-cover-overlay-icon-wrapper">
+                                <i class="fa-solid fa-play playlist-content-item-cover-image-overlay-icon"></i>
+                            </div>
+                        </div>
+
+                        <p class="playlist-content-name-column">
+                            Closer
+                        </p>
+                        <p class="playlist-content-artists-column">
+                            The Chainsmokers
+                        </p>
+                        
+                        <p class="playlist-content-duration-column">
+                            04:03
+                        </p>
+
+                        <div class="playlist-content-options-column">
+                            
+                            <button class="playlist-content-item-like-button standard-button" title="Like">
+                                <i class="fa-regular fa-heart"></i>
+                                <i class="fa-solid fa-heart"></i>
+                            </button>
+
+                            <button class="playlist-content-item-options-button standard-button" title="Options">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+                    
+                    <div class="playlist-content-item">
+
+                        <div class="playlist-content-cover-column">
+                            <img class="playlist-content-item-cover-image" src="./media/sample_audio_and_covers/covers/the_chainsmokers-closer-cover.jpg" alt="playlist_item_cover">
+                            <div class="content-item-cover-overlay-icon-wrapper">
+                                <i class="fa-solid fa-play playlist-content-item-cover-image-overlay-icon"></i>
+                            </div>
+                        </div>
+
+                        <p class="playlist-content-name-column">
+                            Closer
+                        </p>
+                        <p class="playlist-content-artists-column">
+                            The Chainsmokers
+                        </p>
+                        
+                        <p class="playlist-content-duration-column">
+                            04:03
+                        </p>
+
+                        <div class="playlist-content-options-column">
+                            
+                            <button class="playlist-content-item-like-button standard-button" title="Like">
+                                <i class="fa-regular fa-heart"></i>
+                                <i class="fa-solid fa-heart"></i>
+                            </button>
+
+                            <button class="playlist-content-item-options-button standard-button" title="Options">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+            -->
+
+        </section>
+
+        <div id="player-floating-part">
+            
+            <div id="floating-queue-overlay" class="player-floating-part-item-overlay shrunk-element">
+                <p class="queue-lyrics-overlay-label">Queue</p>
+                <hr>
+                <div id="floating-queue-overlay-content-wrapper" class="queue-lyrics-content-wrapper">
+                    <!-- 
+                    <div class="queue-overlay-content-item">
+                        <div class="queue-content-item-cover-column">
+                            <img class="queue-content-item-cover-image" src="./media/sample_audio_and_covers/covers/the_chainsmokers-closer-cover.jpg" alt="queue_item_cover">
+                            <div class="content-item-cover-overlay-icon-wrapper">
+                                <i class="fa-solid fa-play queue-content-item-cover-overlay-icon"></i>
+                                <i class="fa-solid fa-volume-high queue-content-item-cover-overlay-icon"></i>
+                            </div>
+                        </div>
+                        <div class="queue-content-item-name-and-artists-column">
+                            <p class="queue-content-item-name-row">
+                                I Don't Wanna Live Forever (Fifty Shades Darker)
+                            </p>
+                            <p class="queue-content-item-artists-row">
+                                ZAYN & Taylor Swift
+                            </p>
+                        </div>
+                        <p class="queue-content-item-duration-column">
+                            04:03
+                        </p>
+                    </div>
+                     -->
+                </div>
+            </div>
+
+            <div id="floating-lyrics-overlay" class="player-floating-part-item-overlay shrunk-element">
+                <p class="queue-lyrics-overlay-label">Lyrics</p>
+                <hr>
+                <p id="floating-lyrics-overlay-content-wrapper" class="queue-lyrics-content-wrapper lyrics-content-wrapper"></p>
+            </div>
+
+        </div>
+
+        <div class="player-extended-overlay shrunk-element">
+            <div id="player-extended-queue" class="player-extended-overlay-part">
+                <p class="queue-lyrics-overlay-label">Queue</p>
+                <hr>
+                <div id="player-extended-queue-content-wrapper" class="queue-lyrics-content-wrapper">
+                    <!-- 
+                    <div class="queue-overlay-content-item">
+                        <div class="queue-content-item-cover-column">
+                            <img class="queue-content-item-cover-image" src="./media/sample_audio_and_covers/covers/the_chainsmokers-closer-cover.jpg" alt="queue_item_cover">
+                            <div class="content-item-cover-overlay-icon-wrapper">
+                                <i class="fa-solid fa-play queue-content-item-cover-overlay-icon"></i>
+                            </div>
+                        </div>
+                        <div class="queue-content-item-name-and-artists-column">
+                            <p class="queue-content-item-name-row">
+                                I Don't Wanna Live Forever (Fifty Shades Darker)
+                            </p>
+                            <p class="queue-content-item-artists-row">
+                                ZAYN & Taylor Swift
+                            </p>
+                        </div>
+                        <p class="queue-content-item-duration-column">
+                            04:03
+                        </p>
+                    </div>
+                     -->
+                </div>
+            </div>
+            <div id="player-extended-cover" class="player-extended-overlay-part">
+                <!-- <div id="player-extended-cover-image-wrapper"> -->
+                    <!-- <img id="player-extended-cover-image" src="./media/sample_audio_and_covers/covers/the_chainsmokers-closer-cover.jpg" alt="song_cover_image"> -->
+                    <!-- <img id="player-extended-cover-image" src="" alt="song_cover_image"> -->
+                <!-- </div> -->
+            </div>
+            <div id="player-extended-lyrics" class="player-extended-overlay-part">
+                
+                <p class="queue-lyrics-overlay-label">Lyrics</p>
+                <hr>
+                <p id="player-extended-lyrics-content-wrapper" class="queue-lyrics-content-wrapper lyrics-content-wrapper"></p>
+            </div>
+        </div>
+
+    </section>
+
+    <div class="player inactive-player">
+
+        <div id="player-left-part">
+            <div id="player-song-cover">
+                <!-- <img id="player-song-cover-image" src="./media/sample_audio_and_covers/covers/the_chainsmokers-closer-cover.jpg" alt="song_cover_image"> -->
+                <img id="player-song-cover-image" src="" alt="song_cover_image">
+            </div>
+
+            <div id="player-song-info">
+                <!-- <p id="player-song-name">Closer</p><br>
+                <p id="player-song-artist">The Chainsmokers</p> -->
+                <!-- <p id="player-song-name">I Don't Wanna Live Forever</p><br> -->
+                <!-- <p id="player-song-artist">Taylor Swift and Zayn Malik</p> -->
+                <p id="player-song-name"></p><br>
+                <p id="player-song-artist"></p>
+            </div>
+
+            <button id="player-left-part-like-button-container" class="standard-button" title="Like">
+                <i class="fa-regular fa-heart"></i>
+                <!-- <i class="fa-regular fa-heart"></i> -->
+            </button>
+        </div>
+
+        <div id="player-middle-part">
+            <div id="player-middle-part-main">
+                <div id="player-middle-part-controls">
+                    <button id="shuffle-button-container"
+                        class="standard-button" title="Shuffle">
+                        <i class="fa-solid fa-shuffle inactive-button"></i>
+                    </button>
+
+                    <button id="previous-song-button-container"
+                        class="standard-button" title="Play Previous Song">
+                        <i class="fa-solid fa-backward-step"></i>
+                    </button>
+                    <button id="play-pause-button-container"
+                        class="standard-button" title="Play">
+                        <i class="fa-solid fa-circle-play"></i>
+                        <!-- <i class="fa-solid fa-circle-pause"></i> -->
+                    </button>
+                    <button id="next-song-button-container"
+                        class="standard-button" title="Play Next Song">
+                        <i class="fa-solid fa-forward-step"></i>
+                    </button>
+
+                    <button id="repeat-button-container"
+                        class="standard-button" title="Repeat">
+                        <i class="fa-solid fa-1 shrunk-element"></i>
+                        <i class="fa-solid fa-repeat inactive-button"></i>
+                    </button>
+                </div>
+
+                <input type="range" name="player-seek-bar" id="player-seek-bar" value="0">
+            </div>
+
+            <div id="player-middle-part-right">
+                <button id="player-options-button-container" class="standard-button" title="Options">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <div id="player-middle-part-timestamp">
+                    <span id="audio-current-duration"></span>/<span id="audio-total-duration">04:03</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="player-right-part">
+            <div id="player-right-part-main-controls">
+                <button id="queue-button-container" class="standard-button" title="Queue">
+                    <i class="fa-solid fa-list inactive-button"></i>
+                </button>
+                <button id="lyrics-button-container" class="standard-button" title="Lyrics">
+                    <!-- <i class="fa-solid fa-closed-captioning"></i> -->
+                    <i class="fa-regular fa-closed-captioning inactive-button"></i>
+                </button>
+            </div>
+
+            <div id="player-right-part-volume-controls">
+                <button id="volume-button-container" class="standard-button" title="Mute">
+                    <i id="player-right-part-volume-button" class="fa-solid fa-volume-high"></i>
+                </button>
+
+                <input type="range" name="volume-seek-bar" id="volume-seek-bar" value="80" title="Volume">
+            </div>
+
+            <button id="player-extend-button-container" class="standard-button" title="Extend Player">
+                <i class="fa-solid fa-caret-up"></i>
+                <!-- <i class="fa-solid fa-caret-down"></i> -->
+            </button>
+        </div>
+
+        <audio id="player-audio-controls">
+            <!-- <source src="./media/sample_audio_and_covers/audio/renamed/Closer___The_Chainsmokers_ft__Halsey_320_PagalWorld_.mp3" type="audio/mpeg"> -->
+            <source src="" type="audio/mpeg">
+        </audio>
+
+    </div>
+
+    <div id="body-wallpaper">
+        <img class="body-wallpaper-image" src="./media/wallpapers/3046432.jpg" alt="background_wallpaper">
+        <div class="body-wallpaper-overlay"></div>
+    </div>
+
+    <div class="login-popup invisible-element">
+        <div class="login-popup-fade-bg"></div>
+        <div class="login-popup-box">
+            <div class="login-popup-tab-buttons">
+                <div id="login-popup-login-tab-button" class="login-popup-tab-button login-popup-tab-active-button">
+                        Login
+                </div>
+                <div id="login-popup-signup-tab-button" class="login-popup-tab-button">
+                        Sign Up
+                </div>
+                <i id="login-popup-close-button" class="fa-solid fa-times login-popup-tab-button"></i>
+            </div>
+            <hr>
+            <div class="login-popup-login-tab invisible-element shrunk-element">
+                <form class="login-popup-tab-form">
+
+                    <p class="login-popup-input-label">Username</p>
+                    <input type="text" name="username" class="login-popup-username-input" placeholder="Username">
+                    <p class="login-popup-username-caution-text login-popup-caution-text display-none"></p>
+
+                    <p class="login-popup-input-label">Password</p>
+                    <input type="password" name="password" class="login-popup-password-input" placeholder="Password">
+                    <p class="login-popup-password-caution-text login-popup-caution-text display-none"></p>
+
+                </form>
+                <button id="login-popup-submit-login-button" class="login-popup-submit-button">
+                    Login
+                </button>
+            </div>
+            <div class="login-popup-signup-tab invisible-element shrunk-element">
+                <form class="login-popup-tab-form">
+
+                    <p class="login-popup-input-label">Username</p>
+                    <input type="text" name="username" class="login-popup-username-input" placeholder="Username">
+                    <p class="login-popup-username-caution-text login-popup-caution-text display-none"></p>
+
+                    <p class="login-popup-input-label">Email</p>
+                    <input type="email" name="email" class="login-popup-email-input" placeholder="Email">
+                    <p class="login-popup-email-caution-text login-popup-caution-text display-none"></p>
+
+                    <p class="login-popup-input-label">Password</p>
+                    <input type="password" name="password" class="login-popup-password-input" placeholder="Password">
+                    <p class="login-popup-password-caution-text login-popup-caution-text display-none"></p>
+
+                    <p class="login-popup-input-label">Confirm Password</p>
+                    <input type="password" name="confirm-password" class="login-popup-confirm-password-input" placeholder="Password">
+                    <p class="login-popup-confirm-password-caution-text login-popup-caution-text display-none"></p>
+
+                </form>
+                <button id="login-popup-submit-signup-button" class="login-popup-submit-button">
+                    Sign Up
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="floating-notification">
+        <i class="fa-solid fa-square-check floating-notification-icon"></i>
+        <p class="floating-notification-text">
+            Added playlist to library
+        </p>
+    </div> -->
+
+    <!-- IMPORTING SCRIPTS -->
+    <script type="module" src="./script.js"></script>
+</body>
+
+</html>
