@@ -23,14 +23,19 @@ const nav_button_containers = Array.from(document.getElementsByClassName("nav-bu
 // Header
 const search_bar = document.getElementById("search-bar");
 const search_suggestions_wrapper = document.getElementById("search-suggestions-wrapper");
+const webcam_toggle_switch_checkbox = document.getElementById("webcam-toggle-switch-checkbox");
 const profile_button_container = document.getElementById("profile-button-container");
 const profile_dropdown_overlay = document.getElementsByClassName("profile-dropdown-overlay")[0];
 const profile_dropdown_overlay_login_status = document.getElementById("profile-dropdown-overlay-login-status");
 const profile_dropdown_overlay_login_logout_button = document.getElementById("profile-dropdown-overlay-login-logout-button");
 
+// Webcam Popup
+// const webcam_popup = document.getElementsByClassName("webcam-popup")[0];
+// const webcam_video = document.getElementById('webcam-video');
+// const webcam_canvas = document.getElementById('webcam-canvas');
+
 // Login Popup
 const login_popup = document.getElementsByClassName("login-popup")[0];
-const login_popup_fade_bg = document.getElementsByClassName("login-popup-fade-bg")[0];
 const login_popup_login_tab_button = document.getElementById("login-popup-login-tab-button");
 const login_popup_signup_tab_button = document.getElementById("login-popup-signup-tab-button");
 const login_popup_login_tab = document.getElementsByClassName("login-popup-login-tab")[0];
@@ -112,9 +117,16 @@ import playlists_root_id_mapping_obj from "./media/obj_jsons/playlists_root_id_m
 import tabs_obj from "./media/manual_obj_jsons/tabs.json" assert {type: 'json'};
 import categories_obj from "./media/manual_obj_jsons/categories.json" assert {type: 'json'};
 
+// setting source for audio files to new repo
+var audios_src_dir = "https://m8hav.github.io/resound-audio/media/audios";
+// setting source to local directory if on localhost
+if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
+    audios_src_dir = "./media/audios";
+}
+
 var first_play = true;
 var current_content_window_content_type = "tab";
-var current_content_window_content_tag_id = "home";
+var current_content_window_content_tag = "home";
 
 var queue_song_id_list = [];
 var queue_played_song_indexes_list = [];
@@ -131,6 +143,16 @@ var liked_song_ids_list = [];
 var saved_playlist_ids_list = [];
 var recently_played_song_ids_list = [];
 var recently_played_playlist_ids_list = [];
+var recent_searches_list = [];
+
+// Promise.all([
+//     faceapi.nets.tinyFaceDetector.loadFromUri('./face-api/face-api-models'),
+//     faceapi.nets.faceLandmark68Net.loadFromUri('./face-api/face-api-models'),
+//     faceapi.nets.faceRecognitionNet.loadFromUri('./face-api/face-api-models'),
+//     faceapi.nets.faceExpressionNet.loadFromUri('./face-api/face-api-models')
+// ]).then(start_webcam);
+// const webcam_video_display_size = { width: parseInt(getComputedStyle(webcam_video).getPropertyValue("width")), height: parseInt(getComputedStyle(webcam_video).getPropertyValue("height")) };
+// var webcam_face_detection_interval = null;
 
 
 if (shuffle){
@@ -206,10 +228,23 @@ function update_audio_seek_bar_and_time_stamp(){
 }
 
 function render_nav_library_content(){
+
     // clearing nav library content
-    nav_library_content_items_wrapper.innerHTML =
-        `<p class="nav-library-content-item">History</p>
-        <p class="nav-library-content-item">Liked Songs</p>`;
+    nav_library_content_items_wrapper.innerHTML = "";
+    
+    // adding History and Liked Songs items to nav library content if user is logged in
+    if (current_user_id) {
+        nav_library_content_items_wrapper.innerHTML += `<p class="nav-library-content-item">History</p>`;
+        nav_library_content_items_wrapper.innerHTML += `<p class="nav-library-content-item">Liked Songs</p>`;
+        nav_library_content_items_wrapper.children[0].onclick = (event) => {
+            event.stopPropagation();
+            render_playlist("history");
+        }
+        nav_library_content_items_wrapper.children[1].onclick = (event) => {
+            event.stopPropagation();
+            render_playlist("liked_songs");
+        }
+    }
     
     // creating nav library content
     for (let playlist_index = 0; playlist_index < Object.keys(playlists_obj).length; playlist_index++){
@@ -247,9 +282,11 @@ function update_search_suggestions(){
         
         let song_obj = songs_obj[song_id];
 
+        // checking if search query is in song name or artist names
         let query_in_song_name = song_obj.song_name.toLowerCase().includes(search_query);
         let query_in_artist_names = song_obj.song_artist_names.filter(
-            artist_name => artist_name.split(" ").filter(
+            artist_name => artist_name.toLowerCase().includes(search_query)
+                || artist_name.split(" ").filter(
                 word => word.toLowerCase().startsWith(search_query)
                 ).length
             ).length;
@@ -262,7 +299,7 @@ function update_search_suggestions(){
 
             let search_suggestion_text = document.createElement("p");
             search_suggestion_text.className = "search-suggestion-text";
-            search_suggestion_text.innerHTML = song_obj.song_artist_names + " - " + song_obj.song_name;
+            search_suggestion_text.innerHTML = song_obj.song_artist_names.join(", ") + " - " + song_obj.song_name;
             search_suggestion.appendChild(search_suggestion_text);
 
             let search_icon = document.createElement("i");
@@ -270,40 +307,60 @@ function update_search_suggestions(){
             search_suggestion.append(search_icon);
             
             search_suggestion.onclick = (event) => {
+                recent_searches_list.push(song_id);
                 event.stopPropagation();
                 play_song(song_id);
                 show_hide_search_suggestions(false);
             }
         }
     }
-    while (search_suggestions_wrapper.childElementCount < 5){
-        
-        let search_suggestion = document.createElement("span");
-        search_suggestions_wrapper.appendChild(search_suggestion);
-        search_suggestion.className = "search-suggestion";
 
-        let search_suggestion_text = document.createElement("p");
-        search_suggestion_text.className = "search-suggestion-text";
-        search_suggestion_text.innerHTML = `Search History ${search_suggestions_wrapper.childElementCount}`;
-        search_suggestion.appendChild(search_suggestion_text);
-
-        let search_icon = document.createElement("i");
-        search_icon.classList = "fa-solid fa-magnifying-glass search-bar-icon";
-        search_suggestion.append(search_icon);
+    // adding recent searches if search suggestions are less than 5
+    if (search_suggestions_wrapper.childElementCount < 5 && recent_searches_list.length) {
         
-        search_suggestion.onclick = (event) => {
-            event.stopPropagation();
-            play_song(song_id);
+        // creating recent searches header
+        let recent_searches_header = document.createElement("p");
+        recent_searches_header.classList = "search-suggestion-header search-suggestion";
+        recent_searches_header.innerText = "Recent Searches";
+        search_suggestions_wrapper.appendChild(recent_searches_header);
+
+        for (let i = 0; i < recent_searches_list.length; i++){
+            if (search_suggestions_wrapper.childElementCount >= 5) return;
+    
+            let song_id = recent_searches_list[i];
+            let song_obj = songs_obj[song_id];
+    
+            let search_suggestion = document.createElement("span");
+            search_suggestions_wrapper.appendChild(search_suggestion);
+            search_suggestion.className = "search-suggestion";
+    
+            let search_suggestion_text = document.createElement("p");
+            search_suggestion_text.className = "search-suggestion-text";
+            search_suggestion_text.innerHTML = song_obj.song_artist_names + " - " + song_obj.song_name;
+            search_suggestion.appendChild(search_suggestion_text);
+    
+            let search_icon = document.createElement("i");
+            search_icon.classList = "fa-solid fa-magnifying-glass search-bar-icon";
+            search_suggestion.append(search_icon);
+            
+            search_suggestion.onclick = (event) => {
+                event.stopPropagation();
+                play_song(song_id);
+            }
         }
     }
 }
 
 function render_content_window(tab_tag, only_update_content = false){
+    
+    if (tab_tag == "search") return;
+
     current_content_window_content_type = "tab";
-    current_content_window_content_tag_id = tab_tag;
+    current_content_window_content_tag = tab_tag;
 
     if (! only_update_content){
-        toggle_extended_player(false);      // to close extended player when tab clicked with it open
+        // close extended player when nav tab clicked
+        toggle_extended_player(false);
         content_window.scrollTo(0, 0);
     }
 
@@ -313,22 +370,40 @@ function render_content_window(tab_tag, only_update_content = false){
 
     let tab_category_ids = tab_obj.tab_category_ids;
 
-    if (! current_user_id && tab_tag == "library") {
-        tab_category_ids = Object.keys(categories_obj).slice(12, 18);
-    }
-    tab_category_ids = tab_category_ids.concat(Object.keys(categories_obj).slice(12, 18-tab_category_ids.length).map(category_id => Number(category_id)));
+    let appending_tab_category_ids = [...Object.keys(categories_obj).slice(7, 18)].concat(Object.keys(categories_obj).slice(0,6)).map(category_id => Number(category_id));
+    tab_category_ids = tab_category_ids.concat(appending_tab_category_ids);
+    tab_category_ids = tab_category_ids.filter((category_id, index) => tab_category_ids.indexOf(category_id) == index);
+
+    if (tab_tag != "explore") tab_category_ids = tab_category_ids.slice(0, 6);
 
     for (let category_index in tab_category_ids){
-
+        
         let category_id = tab_category_ids[category_index];
 
         // getting category object
         let category_obj = categories_obj[category_id];
 
-        let category_tag = category_obj.category_tag;
-        let category_name = category_obj.category_name;
-        let category_items_type = category_obj.category_items_type;
-        let category_item_ids = category_obj.category_item_ids;
+        let category_tag;
+        let category_name;
+        let category_items_type;
+        let category_item_ids;
+
+        let category_is_playlist = category_obj.category_is_playlist;
+
+        if (category_is_playlist) {
+            let category_playlist_id = category_obj.category_playlist_id;
+            let category_playlist_obj = playlists_obj[category_playlist_id];
+            category_name = category_playlist_obj.playlist_name;
+            category_tag = category_name.replace(" ", "_");
+            category_items_type = "song";
+            category_item_ids = category_playlist_obj.playlist_song_ids;
+        }
+        else {
+            category_tag = category_obj.category_tag;
+            category_name = category_obj.category_name;
+            category_items_type = category_obj.category_items_type;
+            category_item_ids = category_obj.category_item_ids;
+        }
 
         if (tab_tag == "library" && category_tag == "recents") category_name = "History";
 
@@ -408,7 +483,7 @@ function render_content_window(tab_tag, only_update_content = false){
         
         // adding items to category items wrapper
         for (let category_item_index in category_item_ids){
-
+            
             let category_item_id = category_item_ids[category_item_index];
             
             let content_window_category_item = document.createElement("div");
@@ -431,7 +506,7 @@ function render_content_window(tab_tag, only_update_content = false){
                 // adding image to cover if category item is a song
                 content_window_category_item_cover = document.createElement("img");
                 content_window_category_item_cover.src = "./media/covers/" + songs_obj[category_item_id].song_file_name_root + ".jpg";
-                content_window_category_item_cover.alt = category_tag + "_item_cover";
+                content_window_category_item_cover.alt = category_tag + "_song_cover";
             }
             else{
                 category_item_obj = playlists_obj[category_item_id];
@@ -445,7 +520,7 @@ function render_content_window(tab_tag, only_update_content = false){
                         let content_window_category_item_cover_collage_image = document.createElement("img");
                         content_window_category_item_cover_collage_image.src = "./media/covers/" + songs_obj[category_item_obj.playlist_song_ids[i]].song_file_name_root + ".jpg";
                         content_window_category_item_cover_collage_image.classList.add("content-window-category-item-cover-collage-image");
-                        content_window_category_item_cover_collage_image.alt = category_tag + "_item_cover";
+                        content_window_category_item_cover_collage_image.alt = category_tag + "_playlist_cover";
                         content_window_category_item_cover.appendChild(content_window_category_item_cover_collage_image);
                     }
                 }
@@ -453,7 +528,7 @@ function render_content_window(tab_tag, only_update_content = false){
                 else{
                     content_window_category_item_cover = document.createElement("img");
                     content_window_category_item_cover.src = "./media/covers/" + songs_obj[category_item_obj.playlist_song_ids[0]].song_file_name_root + ".jpg";
-                    content_window_category_item_cover.alt = category_tag + "_item_cover";
+                    content_window_category_item_cover.alt = category_tag + "_playlist_cover";
                 }
             }
             
@@ -509,18 +584,39 @@ function render_content_window(tab_tag, only_update_content = false){
     }
 }
 
-function render_playlist(playlist_id){
+function render_playlist(playlist_id, only_update_content = false){
+
     current_content_window_content_type = "playlist";
-    current_content_window_content_tag_id = playlist_id;
-
-    playlist_id = Number(playlist_id);
-    content_window.innerHTML = "";
+    current_content_window_content_tag = playlist_id;
     
-    let playlist_obj = playlists_obj[playlist_id];
+    if (! only_update_content){
+        content_window.scrollTo(0, 0);
+    }
 
-    let playlist_name = playlist_obj.playlist_name;
-    let playlist_song_artist_names = playlist_obj.playlist_song_artist_names.join(", ");
-    let playlist_song_ids = playlist_obj.playlist_song_ids;
+    content_window.innerHTML = "";
+
+    let playlist_name;
+    let playlist_song_artist_names;
+    let playlist_song_ids;
+    if (playlist_id == "history"){
+        playlist_name = playlist_id.split("_").map(word => word[0].toUpperCase() + word.slice(1)).join(" ");
+        playlist_song_artist_names = recently_played_song_ids_list.map(song_id => songs_obj[song_id].song_artist_names.join(", ")).join(", ");
+        playlist_song_ids = recently_played_song_ids_list;
+    }
+    else if (playlist_id == "liked_songs"){
+        playlist_name = playlist_id.split("_").map(word => word[0].toUpperCase() + word.slice(1)).join(" ");
+        playlist_song_artist_names = liked_song_ids_list.map(song_id => songs_obj[song_id].song_artist_names.join(", ")).join(", ");
+        playlist_song_ids = liked_song_ids_list;
+    }
+    else {
+        playlist_id = Number(playlist_id);
+        
+        let playlist_obj = playlists_obj[playlist_id];
+
+        playlist_name = playlist_obj.playlist_name;
+        playlist_song_artist_names = playlist_obj.playlist_song_artist_names.join(", ");
+        playlist_song_ids = playlist_obj.playlist_song_ids;
+    }
 
     // playlist description
     let playlist_description = document.createElement("div");
@@ -546,10 +642,17 @@ function render_playlist(playlist_id){
             playlist_description_cover.appendChild(playlist_description_cover_collage_image);
         }
     }
-    // otherwise adding single image to cover
-    else{
+    // otherwise adding single image to cover if the playlist has 1 or more songs
+    else if (playlist_song_ids.length > 0){
         playlist_description_cover = document.createElement("img");
         playlist_description_cover.src = "./media/covers/" + songs_obj[playlist_song_ids[0]].song_file_name_root + ".jpg";
+        playlist_description_cover.alt = "playlist_cover";
+    }
+    // otherwise adding default image to cover
+    else {
+        playlist_description_cover = document.createElement("img");
+        playlist_description_cover.src = "./media/svgs/clock-rotate-left-solid.svg";
+        playlist_description_cover.classList.add("playlist-description-cover-default-image");
         playlist_description_cover.alt = "playlist_cover";
     }
 
@@ -651,28 +754,31 @@ function render_playlist(playlist_id){
     playlist_description_shuffle_play_button.appendChild(playlist_description_shuffle_play_button_label);
 
     // add to library button
-    let playlist_description_add_to_library_button = document.createElement("button");
-    playlist_description_add_to_library_button.id = "playlist-description-add-to-library-button";
-    playlist_description_add_to_library_button.classList.add("playlist-description-button");
-    playlist_description_add_to_library_button.title = "Add to Library";
-    playlist_description_buttons.appendChild(playlist_description_add_to_library_button);
+    let playlist_description_add_to_library_button, playlist_description_add_to_library_button_icon, playlist_description_add_to_library_button_label;
+    if (playlist_id != "history" && playlist_id != "liked_songs"){
+        playlist_description_add_to_library_button = document.createElement("button");
+        playlist_description_add_to_library_button.id = "playlist-description-add-to-library-button";
+        playlist_description_add_to_library_button.classList.add("playlist-description-button");
+        playlist_description_add_to_library_button.title = "Add to Library";
+        playlist_description_buttons.appendChild(playlist_description_add_to_library_button);
+        
+        playlist_description_add_to_library_button_icon = document.createElement("i");
+        playlist_description_add_to_library_button_icon.classList.add("fa-solid");
+        playlist_description_add_to_library_button_icon.classList.add("fa-plus");
+        playlist_description_add_to_library_button_icon.classList.add("playlist-description-button-icon");
+        playlist_description_add_to_library_button.appendChild(playlist_description_add_to_library_button_icon);
     
-    let playlist_description_add_to_library_button_icon = document.createElement("i");
-    playlist_description_add_to_library_button_icon.classList.add("fa-solid");
-    playlist_description_add_to_library_button_icon.classList.add("fa-plus");
-    playlist_description_add_to_library_button_icon.classList.add("playlist-description-button-icon");
-    playlist_description_add_to_library_button.appendChild(playlist_description_add_to_library_button_icon);
-
-    let playlist_description_add_to_library_button_label = document.createElement("p");
-    playlist_description_add_to_library_button_label.classList.add("playlist-description-button-label");
-    playlist_description_add_to_library_button_label.innerText = "Add to Library";
-    playlist_description_add_to_library_button.appendChild(playlist_description_add_to_library_button_label);
-
-    if (saved_playlist_ids_list.includes(playlist_id)) {
-        playlist_description_add_to_library_button.title = "Remove from Library";
-        playlist_description_add_to_library_button_icon.classList.remove("fa-plus");
-        playlist_description_add_to_library_button_icon.classList.add("fa-square-minus");
-        playlist_description_add_to_library_button_label.innerText = "Remove from Library";
+        playlist_description_add_to_library_button_label = document.createElement("p");
+        playlist_description_add_to_library_button_label.classList.add("playlist-description-button-label");
+        playlist_description_add_to_library_button_label.innerText = "Add to Library";
+        playlist_description_add_to_library_button.appendChild(playlist_description_add_to_library_button_label);
+    
+        if (saved_playlist_ids_list.includes(playlist_id)) {
+            playlist_description_add_to_library_button.title = "Remove from Library";
+            playlist_description_add_to_library_button_icon.classList.remove("fa-plus");
+            playlist_description_add_to_library_button_icon.classList.add("fa-square-minus");
+            playlist_description_add_to_library_button_label.innerText = "Remove from Library";
+        }
     }
 
     // more options button
@@ -693,23 +799,50 @@ function render_playlist(playlist_id){
     playlist_description_add_to_queue_button_label.innerText = "Add to Queue";
     playlist_description_add_to_queue_button.appendChild(playlist_description_add_to_queue_button_label);
 
-    // playlist buttons event listeners
-    playlist_description_play_button.onclick = () => play_song(playlist_song_ids[0], playlist_id);
-    
-    playlist_description_shuffle_play_button.onclick = () => play_song(playlist_song_ids[Math.floor(Math.random() * playlist_song_ids.length)], playlist_id, false, true);
-
-    playlist_description_add_to_library_button.onclick = () => add_remove_playlist_to_library(playlist_id);
-
-    playlist_description_add_to_queue_button.onclick = () => {
-        queue_song_id_list = queue_song_id_list.concat(playlist_song_ids);
-        render_queue();
-    };
+    // adding playlist buttons event listeners if playlist is not empty
+    if (playlist_song_ids.length > 0) {
+        playlist_description_play_button.onclick = () => play_song(playlist_song_ids[0], playlist_id);
+        playlist_description_shuffle_play_button.onclick = () => play_song(playlist_song_ids[Math.floor(Math.random() * playlist_song_ids.length)], playlist_id, false, true);
+        if (playlist_id != "history" && playlist_id != "liked_songs")
+            playlist_description_add_to_library_button.onclick = () => add_remove_playlist_to_library(playlist_id);
+        playlist_description_add_to_queue_button.onclick = () => {
+            queue_song_id_list = queue_song_id_list.concat(playlist_song_ids);
+            render_queue();
+        };
+    }
+    // disabling buttons if playlist is empty
+    else {
+        playlist_description_play_button.disabled = true;
+        playlist_description_play_button_icon.classList.remove("fa-play");
+        playlist_description_play_button_icon.classList.add("fa-ban");
+        playlist_description_shuffle_play_button.disabled = true;
+        playlist_description_shuffle_play_button_icon.classList.remove("fa-shuffle");
+        playlist_description_shuffle_play_button_icon.classList.add("fa-ban");
+        if (playlist_id != "history" && playlist_id != "liked_songs") {
+            playlist_description_add_to_library_button.disabled = true;
+            playlist_description_add_to_library_button_icon.classList.remove("fa-plus");
+            playlist_description_add_to_library_button_icon.classList.add("fa-ban");
+        }
+        playlist_description_add_to_queue_button.disabled = true;
+        playlist_description_add_to_queue_button_icon.classList.remove("fa-list-check");
+        playlist_description_add_to_queue_button_icon.classList.add("fa-ban");
+    }
 
     
     // playlist contents
     let playlist_content = document.createElement("div");
     playlist_content.id = "playlist-content";
     content_window.appendChild(playlist_content);
+
+    // if playlist is empty
+    if (playlist_song_ids.length == 0) {
+        let playlist_content_empty = document.createElement("p");
+        playlist_content_empty.id = "playlist-content-empty";
+        playlist_content_empty.innerText = "This playlist is empty...";
+        playlist_content.appendChild(playlist_content_empty);
+        playlist_info_duration_number.innerText = "0";
+        return;
+    }
 
     // playlist contents header
     let playlist_content_header = document.createElement("div");
@@ -756,7 +889,7 @@ function render_playlist(playlist_id){
         let song_obj = songs_obj[song_id];
 
         let song_name = song_obj.song_name;
-        let song_artist_names = song_obj.song_artist_names;
+        let song_artist_names = song_obj.song_artist_names.join(", ");
         let song_duration = song_obj.song_duration;
 
         // playlist item
@@ -835,14 +968,14 @@ function render_playlist(playlist_id){
         };
 
         // playlist item option options button
-        let playlist_content_item_options_button = document.createElement("button");
-        playlist_content_item_options_button.classList.add("standard-button");
-        playlist_content_item_options.appendChild(playlist_content_item_options_button);
+        // let playlist_content_item_options_button = document.createElement("button");
+        // playlist_content_item_options_button.classList.add("standard-button");
+        // playlist_content_item_options.appendChild(playlist_content_item_options_button);
 
-        let playlist_content_item_options_button_icon = document.createElement("i");
-        playlist_content_item_options_button_icon.classList.add("fa-solid");
-        playlist_content_item_options_button_icon.classList.add("fa-ellipsis-vertical");
-        playlist_content_item_options_button.appendChild(playlist_content_item_options_button_icon);
+        // let playlist_content_item_options_button_icon = document.createElement("i");
+        // playlist_content_item_options_button_icon.classList.add("fa-solid");
+        // playlist_content_item_options_button_icon.classList.add("fa-ellipsis-vertical");
+        // playlist_content_item_options_button.appendChild(playlist_content_item_options_button_icon);
         
         // highlighting current playing song in playlist contents
         // highlight_playing_item alone doesn't do it because category_item_overlay_icon_wrapper event calls play_song before the category_item_overlay event that renders playlist
@@ -865,8 +998,6 @@ function render_playlist(playlist_id){
     }
 
     playlist_info_duration_number.innerText = Math.ceil(playlist_info_duration_sum / 60);
-    
-    content_window.scrollTo(0, 0);
 
     let nav_last_active_tab = nav.querySelector(".active-item");
     if (nav_last_active_tab) nav_last_active_tab.classList.remove("active-item");
@@ -878,12 +1009,25 @@ function add_remove_playlist_to_library(playlist_id){
         return;
     }
     playlist_id = Number(playlist_id);
+    
+    let playlist_description_add_to_library_button = document.getElementById("playlist-description-add-to-library-button");
+    let playlist_description_add_to_library_button_icon = playlist_description_add_to_library_button.querySelector("i");
+    let playlist_description_add_to_library_button_label = playlist_description_add_to_library_button.querySelector("p");
+    
     if (saved_playlist_ids_list.includes(playlist_id)){
         saved_playlist_ids_list = saved_playlist_ids_list.filter(id => id != playlist_id);
         make_floating_notification("remove_playlist_from_library");        
+        playlist_description_add_to_library_button.title = "Add to library";
+        playlist_description_add_to_library_button_icon.classList.add("fa-plus");
+        playlist_description_add_to_library_button_icon.classList.remove("fa-square-minus");
+        playlist_description_add_to_library_button_label.innerText = "Add to Library";
     } else {
         saved_playlist_ids_list.unshift(playlist_id);
-        make_floating_notification("add_playlist_to_library");        
+        make_floating_notification("add_playlist_to_library");
+        playlist_description_add_to_library_button.title = "Remove from Library";
+        playlist_description_add_to_library_button_icon.classList.remove("fa-plus");
+        playlist_description_add_to_library_button_icon.classList.add("fa-square-minus");
+        playlist_description_add_to_library_button_label.innerText = "Remove from Library";
     }
     update_user_content();
 }
@@ -1073,8 +1217,8 @@ function login(){
     let password_input = login_popup_login_tab.querySelector(".login-popup-password-input");
     let password_caution_text = login_popup_login_tab.querySelector(".login-popup-password-caution-text");
 
-    let username = username_input.value;
-    let password = password_input.value;
+    let username = username_input.value.toLowerCase();
+    let password = password_input.value.toLowerCase();
 
     // checking if username and password are entered
     if (! username || ! password){
@@ -1126,8 +1270,8 @@ function signup(){
     let confirm_password_input = login_popup_signup_tab.querySelector(".login-popup-confirm-password-input");
     let confirm_password_caution_text = login_popup_signup_tab.querySelector(".login-popup-confirm-password-caution-text");
 
-    let username = username_input.value;
-    let email = email_input.value;
+    let username = username_input.value.toLowerCase();
+    let email = email_input.value.toLowerCase();
     let password = password_input.value;
     let confirm_password = confirm_password_input.value;
 
@@ -1222,9 +1366,9 @@ function update_user_content(just_logged_in = false){
     
     if (current_user_id) {
         
-        let user_obj = users_obj[current_user_id];
-        
         if (just_logged_in){
+            let user_obj = users_obj[current_user_id];
+
             profile_dropdown_overlay_login_status.innerText = "Logged into @" + users_obj[current_user_id].username;
             profile_dropdown_overlay_login_logout_button.innerText = "Logout";
 
@@ -1249,10 +1393,13 @@ function update_user_content(just_logged_in = false){
         recently_played_playlist_ids_list = [];
         sessionStorage.setItem("current_user_id", JSON.stringify(current_user_id));
     }
+    
     if (current_content_window_content_type == "tab"){
-        render_content_window(current_content_window_content_tag_id, true);
+        render_content_window(current_content_window_content_tag, true);
     }
-    // else render_playlist(current_content_window_content_tag_id);
+    else render_playlist(current_content_window_content_tag, true);
+    
+    render_nav_library_content();
 }
 
 function like_unlike_song(song_id){
@@ -1379,7 +1526,7 @@ function play_song(song_id, playlist_id = null, append_queue = false, shuffle_cu
     player_extended_cover_image.src = img_src;
     player_extended_cover_image.alt = "song_cover_image";
     player_song_name.innerText = song_obj.song_name;
-    player_song_artist.innerText = song_obj.song_artist_names;
+    player_song_artist.innerText = song_obj.song_artist_names.join(", ");
     player_audio_total_duration_label.innerText = return_duration_string(song_obj.song_duration);
 
     render_lyrics(song_id);
@@ -1393,7 +1540,7 @@ function play_song(song_id, playlist_id = null, append_queue = false, shuffle_cu
         player_like_button_icon.classList.add("fa-regular");
     }
 
-    player_audio_controls.innerHTML = `<source src="./media/audios/${song_obj.song_file_name_root}.mp3" type="audio/mpeg">`;
+    player_audio_controls.innerHTML = `<source src="${audios_src_dir}/${song_obj.song_file_name_root}.mp3" type="audio/mpeg">`;
     player_audio_controls.load();
     play_pause(true);
 
@@ -1724,6 +1871,40 @@ function make_floating_notification(type, show_icon = true){
     }, 3000);
 }
 
+// function start_webcam() {
+//     navigator.mediaDevices.getUserMedia({ video: true })
+//         .then(stream => webcam_video.srcObject = stream)
+//         .catch(error => console.error('Camera access not allowed!', error));
+// }
+
+// function stop_webcam() {
+//     webcam_video.srcObject.getTracks()[0].stop();
+// }
+
+// function start_mood_detection_interval() {
+//     faceapi.matchDimensions(webcam_canvas, webcam_video_display_size);
+
+//     webcam_face_detection_interval = setInterval(async () => {
+//         const detections = await faceapi.detectAllFaces(
+//             webcam_video,
+//             new faceapi.TinyFaceDetectorOptions())
+//             .withFaceLandmarks()
+//             .withFaceExpressions();
+//         const resized_detections = faceapi.resizeResults(detections, webcam_video_display_size);
+        
+//         webcam_canvas.getContext('2d').clearRect(0, 0, webcam_canvas.width, webcam_canvas.height);
+//         faceapi.draw.drawDetections(webcam_canvas, resized_detections);
+//         // faceapi.draw.drawFaceLandmarks(canvasElement, resizedDetections);
+//         faceapi.draw.drawFaceExpressions(webcam_canvas, resized_detections);
+        
+//         // Check if the expression is "sad"
+//         if(resized_detections.length && resized_detections[0].expressions.sad > 0.3) {
+//             // Do something when the expression is sad
+//             console.log('Person is sad!');
+//         }
+//     }, 100);
+// }
+
 
 // Event Listeners
 nav.onmouseenter = () => shrink_unshrink_nav_bar(false);
@@ -1748,6 +1929,8 @@ search_bar.onkeydown = (event) => {
         render_content_window("search");
     }
 }
+
+// webcam_video.onplay = start_mood_detection_interval;
 
 profile_button_container.onclick = (event) => {
     event.stopPropagation();
@@ -1775,7 +1958,7 @@ player_next_song_button_container.onclick = play_next_song;
 
 player_repeat_button_container.onclick = repeat_toggle;
 
-player_options_button_container.onclick = options_dialog_open_close;
+// player_options_button_container.onclick = options_dialog_open_close;
 
 player_queue_button_container.onclick = queue_overlay_open_close;
 
@@ -1806,10 +1989,12 @@ document.onkeydown = (event) => {
         if (document.activeElement.tagName == "INPUT" && document.activeElement.type == "text"){
             event.preventDefault();
             event.target.blur();
+            show_hide_search_suggestions(false);
         }
         else {
             event.preventDefault();
             toggle_extended_player();
+            show_hide_search_suggestions(false);
         }
     }
     if (document.activeElement.tagName == "INPUT" && (document.activeElement.type == "text" || document.activeElement.type == "password" || document.activeElement.type == "email")){
@@ -1817,7 +2002,7 @@ document.onkeydown = (event) => {
     }
     if (event.key == " "){
         event.preventDefault();
-        play_pause();
+        if (! first_play) play_pause();
     }
     if (event.key == "ArrowLeft"){
         event.preventDefault();
@@ -1837,31 +2022,31 @@ document.onkeydown = (event) => {
         player_volume_seek_bar.value = Number(player_volume_seek_bar.value) - 5;
         update_volume();
     }
-    if (event.key.toUpperCase() == "S"){
+    if (event.key.toUpperCase() == "S" && ! event.ctrlKey){
         event.preventDefault();
         shuffle_on_off();
     }
-    if (event.key.toUpperCase() == "R"){
+    if (event.key.toUpperCase() == "R" && ! event.ctrlKey){
         event.preventDefault();
         repeat_toggle();
     }
-    if (event.key.toUpperCase() == "M"){
+    if (event.key.toUpperCase() == "M" && ! event.ctrlKey){
         event.preventDefault();
         mute_unmute();
     }
-    if (event.key.toUpperCase() == "Q" && player_extended_overlay.classList.contains("shrunk-element")){
+    if (event.key.toUpperCase() == "Q" && player_extended_overlay.classList.contains("shrunk-element") && ! event.ctrlKey){
         event.preventDefault();
         queue_overlay_open_close();
     }
-    if (event.key.toUpperCase() == "L" && player_extended_overlay.classList.contains("shrunk-element")){
+    if (event.key.toUpperCase() == "L" && player_extended_overlay.classList.contains("shrunk-element") && ! event.ctrlKey){
         event.preventDefault();
         lyrics_overlay_open_close();
     }
-    if (event.shiftKey && event.key.toUpperCase() == "P"){
+    if (event.shiftKey && event.key.toUpperCase() == "P" && ! event.ctrlKey){
         event.preventDefault();
         play_previous_song();
     }
-    if (event.shiftKey && event.key.toUpperCase() == "N"){
+    if (event.shiftKey && event.key.toUpperCase() == "N" && ! event.ctrlKey){
         event.preventDefault();
         play_next_song();
     }

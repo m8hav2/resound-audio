@@ -22,8 +22,8 @@
     --playlist-content-item-cover-side: 2rem;
     --floating-queue-content-item-cover-side: 1.9rem;
     --player-extended-queue-content-item-cover-side: 2.3rem;
-    --transition-properties: all 0.2s;
-    /* --transition-properties: none; */
+    /* --transition-properties: all 0.2s; */
+    --transition-properties: none;
 }
 
 /* SCROLLBAR CUSTOMIZATION */
@@ -304,17 +304,25 @@ header{
     border-radius: 0 0 0.25rem 0.25rem;
 }
 .search-suggestion{
+    font-size: 0.95em;
     display: flex;
     align-items: center;
     width: 100%;
     padding: 0.75rem 2.5rem 0.75rem 1rem;
-    cursor: pointer;
     position: relative;
+    cursor: pointer;
+}
+.search-suggestion-header{
+    font-weight: 500;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 .search-suggestion-text{
     width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
-.search-suggestion:hover{
+.search-suggestion:not(.search-suggestion-header):hover{
     background-color: var(--hover-bg-color-light);
 }
 .search-bar-icon{
@@ -325,15 +333,99 @@ header{
 }
 #header-right-part{
     width: 25%;
-    margin: 0 0 0 10%;
+    /* margin: 0 0 0 10%; */
     display: flex;
     align-items: center;
-    /* justify-content: space-evenly; */
-
-    /* temporarily disabling upload and messaging buttons and changing justify-content to right */
-    justify-content: right;
-    padding-right: 1rem;
+    justify-content: space-evenly;
+    /* padding-right: 1rem; */
 }
+
+
+/* webcam Toggle Switch */
+#webcam-toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 1.7rem;
+    height: 1rem;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--hover-bg-color-light);
+    border-radius: 0.9rem;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    z-index: 5;
+    content: "";
+    height: 0.7rem;
+    width: 0.7rem;
+    left: 0.2rem;
+    bottom: 0.125rem;
+    background-color: black;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
+}
+  
+input:checked + .toggle-slider {
+    background-color: var(--sub-label-color);
+}
+
+input:checked + .toggle-slider:before {
+    -webkit-transform: translateX(0.63rem);
+    -ms-transform: translateX(0.63rem);
+    transform: translateX(0.63rem);
+}
+
+/* Webcam Popup */
+.webcam-popup-box{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--floating-panels-bg-color);
+    box-shadow: var(--overlay-box-shadow);
+    padding: 1rem;
+    border-radius: 0.25rem;
+    z-index: 100;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: column;
+}
+#webcam-video-container{
+    position: relative;
+    width: 24rem;
+    height: 13.5rem;
+    border-radius: 0.25rem;
+    margin-top: 0.75rem;
+}
+#webcam-video{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0.25rem;
+    background-color: black;
+}
+#webcam-canvas{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 0.25rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
 .profile-dropdown-overlay{
     position: absolute;
     top: calc(var(--header-height) + 0.5rem);
@@ -349,7 +441,6 @@ header{
 .profile-dropdown-overlay ul li{
     width: 100%;
     padding: 0.5rem;
-    /* border-top: 1px solid var(--item-border-bottom-color); */
     border-bottom: 1px solid var(--item-border-bottom-color);
     list-style: none;
     overflow: hidden;
@@ -362,15 +453,8 @@ header{
 .profile-dropdown-overlay ul li:not(#profile-dropdown-overlay-login-status):hover{
     background-color: var(--hover-bg-color-light);
 }
-.login-popup-fade-bg{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 20;
-}
+
+/* Login Popup */
 .login-popup-box{
     width: 350px;
     position: fixed;
@@ -642,6 +726,11 @@ header{
     width: calc(var(--playlist-description-cover-side) / 2);
     object-fit: cover;
 }
+.playlist-description-cover-default-image{
+    padding: 2.25rem;
+    filter: invert(1);
+    opacity: 0.7;
+}
 #playlist-description-info-and-buttons{
     width: 100%;
     width: calc(100% - var(--playlist-description-cover-side) - 2rem);
@@ -683,6 +772,9 @@ header{
     margin-bottom: 0.25rem;
     padding: 0.4rem 0.75rem 0.4rem 0.9rem;
     font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .playlist-description-button:hover{
     box-shadow: var(--buttons-box-shadow);
@@ -702,6 +794,13 @@ header{
     flex-direction: column;
     align-items: center;
     font-size: 0.8rem;
+}
+#playlist-content-empty{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 10rem;
+    color: var(--sub-label-color);
 }
 #playlist-content hr{
     font-size: 5px;
@@ -739,16 +838,19 @@ header{
 .playlist-content-name-column{
     width: 30%;
     padding: 0 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #playlist-content .playlist-content-name-column{
     cursor: pointer;
 }
 .playlist-content-artists-column{
     width: 30%;
+    padding: 0 0.5rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding: 0 0.5rem;
 }
 .playlist-content-duration-column{
     width: 15%;
@@ -1236,4 +1338,14 @@ header{
 
 .display-none{
     display: none;
+}
+
+.popup-fade-bg{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 20;
 }
