@@ -118,7 +118,7 @@ import tabs_obj from "./media/manual_obj_jsons/tabs.json" assert {type: 'json'};
 import categories_obj from "./media/manual_obj_jsons/categories.json" assert {type: 'json'};
 
 // setting source for audio files to new repo
-var audios_src_dir = "https://m8hav.github.io/resound-audio/media/audios";
+var audios_src_dir = "https://m8hav2.github.io/resound-audio/media/audios";
 // setting source to local directory if on localhost
 if (location.hostname === "localhost" || location.hostname === "127.0.0.1"){
     audios_src_dir = "./media/audios";
